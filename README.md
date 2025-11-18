@@ -1,121 +1,159 @@
-\documentclass[12pt]{article}
-\usepackage{setspace}
-\usepackage{geometry}
-\usepackage{titlesec}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{booktabs}
+Here is a clean, **copy-paste ready `README.md`** that ONLY includes what the assignment wants:
 
-\geometry{margin=1in}
-\setstretch{1.2}
+✅ **How to reproduce your experiments**
+❌ No results
+❌ No long explanations
+❌ No project write-up
 
-\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
-\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+Just a clean, simple reproducibility README for GitHub.
 
-\title{\textbf{LLM Bias Evaluation Report}\\[4pt]
-\large Final Project – Research Task 08}
-\author{}
-\date{}
+---
 
-\begin{document}
+# **README.md – Reproducibility Guide**
 
-\maketitle
+## **Overview**
 
-\section{Executive Summary}
+This repository contains all code necessary to reproduce the LLM bias experiments conducted using **Groq LLaMA-3.3-70B-Versatile** and **Mistral-Large-Latest**. The experiments evaluate how prompt framing affects model outputs across three hypotheses: framing bias, outcome framing bias, and selection bias.
 
-This project evaluated how large language models (LLMs) respond to variations in prompt framing and whether wording alone can systematically shift model behavior. Two state-of-the-art models---Groq's LLaMA-3.3-70B-Versatile and Mistral-Large-Latest---were tested across three types of cognitive bias: (1) framing bias, (2) outcome framing bias, and (3) selection bias. Each prompt used the same Syracuse Women’s Lacrosse 2025 dataset, ensuring that the only manipulated element was the phrasing of the question.
+This guide explains exactly how to regenerate prompts, run the models, and produce the analysis files.
 
-Across all hypotheses, the results show that LLMs shift sentiment, narrative tone, and emphasis based on the framing of the prompt. Negative framings produced more negatively-coded language, whereas positive framings led to more optimistic recommendations. Outcome framing showed parallel effects: loss-focused prompts elicited more blame-oriented reasoning, while win-focused prompts generated more constructive language. Selection bias was also strongly present; prompts focused on offense or defense caused the models to disproportionately emphasize the requested aspect, despite identical underlying statistics.
+---
 
-While the small sample size prevents strong statistical claims, the directional patterns are consistent and align with cognitive bias theory. These findings suggest that LLMs can unintentionally reinforce or amplify biases embedded in the prompt. This has implications for applications involving evaluation, performance review, and decision support. Neutral prompt design, explicit context requests, and self-correction mechanisms are recommended to reduce bias.
+## **1. Environment Setup**
 
-\section{Methodology}
+### **Install Dependencies**
 
-\subsection{Experimental Design}
-Three hypotheses were tested:
+```bash
+pip install -r requirements.txt
+```
 
-\begin{itemize}
-    \item \textbf{H1: Framing Bias} — Negative, neutral, and positive framings influence sentiment and tone.
-    \item \textbf{H2: Outcome Framing} — Emphasizing wins versus losses shifts evaluation.
-    \item \textbf{H3: Selection Bias} — Asking about offense versus defense changes model focus.
-\end{itemize}
+If you do not have a `requirements.txt`, install manually:
 
-All prompts used identical season statistics; only framing changed.
+```bash
+pip install requests pandas textblob python-docx scipy
+python -m textblob.download_corpora
+```
 
-\subsection{Models Used}
-\begin{itemize}
-    \item Groq LLaMA-3.3-70B-Versatile
-    \item Mistral-Large-Latest
-\end{itemize}
+---
 
-\subsection{Data Collection}
-Each hypothesis included three conditions. Both models generated two responses per condition, producing a balanced dataset stored in \texttt{combined\_responses.json}.
+## **2. Set API Keys**
 
-\subsection{Analysis Approach}
+### **Groq API Key**
 
-Analysis included:
-\begin{itemize}
-    \item Sentiment scoring using TextBlob
-    \item Negative vs positive evaluative term frequency
-    \item Offense vs defense lexical emphasis
-    \item Late-game phrase frequency (4Q, OT)
-    \item Recommendation-type categorization (conditioning, tactical, mental, roster)
-    \item Exploratory pairwise t-tests for sentiment differences
-\end{itemize}
+```bash
+export GROQ_API_KEY="your_groq_key_here"
+```
 
-Results were exported to \texttt{analysis/llm\_bias\_analysis.csv}.
+### **Mistral API Key**
 
-\section{Results}
+```bash
+export MISTRAL_API_KEY="your_mistral_key_here"
+```
 
-\subsection{Sentiment Patterns}
-Positive conditions exhibited the highest sentiment scores (H1 positive = 0.176; H2 win-focus = 0.163), while negative and loss-focused prompts had the lowest (H1 negative = 0.074; H2 loss-focus = 0.088).
+Both environment variables **must** be set before running the experiment script.
 
-\subsection{Negative vs Positive Language}
-Negative framings produced more negative terms (7.5--14.5 per response), and positive framings produced more positive terms (5.5--11.5). This supports the presence of framing bias.
+---
 
-\subsection{Selection Bias}
-Offense-focus prompts yielded the highest offense-term counts (51.5).  
-Defense-focus prompts yielded the highest defense-term counts (30).  
-This occurred despite identical underlying performance data.
+## **3. Generate Prompts**
 
-\subsection{Late-Game Emphasis}
-Responses frequently referenced fourth-quarter or overtime performance across all conditions. Outcome framing amplified these mentions (H2 neutral = 25 late-game references).
+This script creates all hypothesis/condition prompts and stores them in:
 
-\subsection{Recommendation Types}
-Win-focus and offense-focus conditions produced the broadest range of recommendations, including conditioning, tactical adjustments, and roster depth improvements.
+```
+prompts/all_prompts.json
+```
 
-\subsection{Statistical Significance}
-No t-tests reached significance due to small sample size, but all directional effects matched theoretical expectations.
+Run:
 
-\section{Bias Catalogue}
+```bash
+python experiment_design.py
+```
 
-\begin{itemize}
-    \item \textbf{Framing Bias (Medium)} — Tone and sentiment shift with prompt framing.
-    \item \textbf{Outcome Framing Bias (Medium-High)} — Loss prompts lead to stronger negative wording.
-    \item \textbf{Selection Bias (High)} — LLMs strongly follow user-imposed focal areas.
-    \item \textbf{Overemphasis Bias (Low-Medium)} — Late-game performance over-discussed across conditions.
-    \item \textbf{Reinforcement Bias (High)} — LLMs accept biased premises without challenge.
-\end{itemize}
+---
 
-\section{Mitigation Strategies}
+## **4. Run LLM Experiments**
 
-\begin{enumerate}
-    \item Use balanced, neutral prompt structures.
-    \item Request evaluation of both offensive and defensive factors.
-    \item Ask models to cite statistics directly from the prompt.
-    \item Avoid single-focus prompts that trigger selection bias.
-    \item Use self-correction prompts (e.g., ``Review your response for bias.'').
-    \item Compare multiple models to detect model-specific tendencies.
-\end{enumerate}
+This script queries **both models** (Groq + Mistral) using the generated prompts.
 
-\section{Limitations}
+It produces:
 
-\begin{itemize}
-    \item Small sample size limits statistical power.
-    \item Keyword-based analysis does not capture deeper semantic bias.
-    \item Only two LLMs included.
-    \item Prompts measure framing bias, not training-data bias.
-    \item Numeric validation limited to main statistics.
-\end{itemize}
+* `results/groq_responses.json`
+* `results/mistral_responses.json`
+* `results/combined_responses.json`
 
-\end{document}
+Run:
+
+```bash
+python run_experiment.py
+```
+
+---
+
+## **5. Analyze Bias**
+
+This script performs:
+
+* Sentiment scoring
+* Lexical frequency counts
+* Recommendation-type classification
+* Grouped summaries
+* Exploratory statistical tests
+
+Output is saved to:
+
+```
+analysis/llm_bias_analysis.csv
+```
+
+Run:
+
+```bash
+python analyze_bias.py
+```
+
+---
+
+## **6. Validate Numeric Claims (Optional)**
+
+Checks responses for incorrect numerical assertions compared to the ground-truth dataset.
+
+Output:
+
+```
+analysis/claim_validation.csv
+```
+
+Run:
+
+```bash
+python validate_claims.py
+```
+
+---
+
+## **7. File Outputs**
+
+After running all scripts, your directory will contain:
+
+```
+prompts/all_prompts.json
+results/groq_responses.json
+results/mistral_responses.json
+results/combined_responses.json
+analysis/llm_bias_analysis.csv
+analysis/claim_validation.csv
+```
+
+These files fully reproduce the experimental data and analysis.
+
+---
+
+## **8. Reproducibility Notes**
+
+* All randomness is controlled by the LLM APIs; no random seeds required.
+* Prompts are deterministic and stored for transparency.
+* API rate limits may require a slight delay between runs.
+* Running the scripts multiple times will re-generate new LLM responses.
+
+---
+
+If you want, I can also generate a small **diagram** showing the workflow for the README.
