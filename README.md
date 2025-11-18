@@ -1,15 +1,4 @@
-Here is a clean, **copy-paste ready `README.md`** that ONLY includes what the assignment wants:
-
-✅ **How to reproduce your experiments**
-❌ No results
-❌ No long explanations
-❌ No project write-up
-
-Just a clean, simple reproducibility README for GitHub.
-
----
-
-# **README.md – Reproducibility Guide**
+**Reproducibility Guide**
 
 ## **Overview**
 
@@ -17,7 +6,6 @@ This repository contains all code necessary to reproduce the LLM bias experiment
 
 This guide explains exactly how to regenerate prompts, run the models, and produce the analysis files.
 
----
 
 ## **1. Environment Setup**
 
@@ -154,6 +142,4 @@ These files fully reproduce the experimental data and analysis.
 * API rate limits may require a slight delay between runs.
 * Running the scripts multiple times will re-generate new LLM responses.
 
----
 
-If you want, I can also generate a small **diagram** showing the workflow for the README.
